@@ -51,11 +51,12 @@ io.on('connection', (socket) => {
   });
 
   // Listen for sendMessage event from client
-  socket.on('sendMessage', async ({ sender, receiver, content }) => {
+  socket.on('sendMessage', async ({ sender, receiver, content, id }) => {
     // Save the message to the database
-    const chat = await Chat.create({ sender, receiver, content });
+    const chat = await Chat.findById({_id: id });
     // If the receiver is online, send them the message in real-time
     const receiverSocketId = onlineUsers.get(receiver);
+
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('receiveMessage', chat);
     }
